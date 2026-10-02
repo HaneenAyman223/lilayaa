@@ -29,6 +29,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * the same way. "Custom value" gift cards never reach this at all — the
  * widget always sends that option to WhatsApp, since there's no fixed
  * amount to turn into a coupon.
+ *
+ * RECIPIENT EMAIL: the gift card widget can collect the recipient's name,
+ * email and a personal message. These ride along on the add-to-cart URL
+ * (lk_gc_*), are stored on the cart item and then on the order line item, and
+ * once the code is generated it is emailed to the recipient automatically.
+ * The buyer still sees the code on the thank-you page / their own email.
  */
 define( 'LK_GIFT_CARD_SKU', 'lk-gift-card' );
 
@@ -105,6 +111,18 @@ add_action( 'woocommerce_payment_complete', function ( $order_id ) {
 		$item->add_meta_data( '_lk_gift_card_codes', implode( ', ', $codes ), true );
 		$item->add_meta_data( '_lk_gift_card_amount', $amount, true );
 		$item->save();
+
+		// Email the recipient (once). Only runs if a recipient was chosen at purchase.
+		if ( $item->get_meta( '_lk_gift_recipient_email' ) && ! $item->get_meta( '_lk_gift_card_emailed' ) ) {
+			$recipient = $item->get_meta( '_lk_gift_recipient_email' );
+			if ( lk_send_gift_card_recipient_email( $order, $item, $codes, $amount ) ) {
+				$item->add_meta_data( '_lk_gift_card_emailed', current_time( 'mysql' ), true );
+				$item->save();
+				$order->add_order_note( sprintf( 'Gift card code emailed to %s.', $recipient ) );
+			} else {
+				$order->add_order_note( sprintf( 'Gift card email to %s FAILED to send — send the code manually.', $recipient ) );
+			}
+		}
 	}
 
 	// Balance carryover: for every gift-card coupon actually used on THIS
@@ -130,6 +148,101 @@ add_action( 'woocommerce_payment_complete', function ( $order_id ) {
 }, 20 );
 
 /**
+ * ---------------------------------------------------------------------------
+ * Gift Card recipient — capture, carry through checkout, email the code
+ * ---------------------------------------------------------------------------
+ */
+
+// 1. Capture recipient details sent by the widget on the add-to-cart URL.
+add_filter( 'woocommerce_add_cart_item_data', function ( $cart_item_data, $product_id ) {
+	if ( empty( $_REQUEST['lk_gc_email'] ) ) {
+		return $cart_item_data;
+	}
+	$product = wc_get_product( $product_id );
+	if ( ! $product || LK_GIFT_CARD_SKU !== $product->get_sku() ) {
+		return $cart_item_data;
+	}
+	$email = sanitize_email( wp_unslash( $_REQUEST['lk_gc_email'] ) );
+	if ( ! is_email( $email ) ) {
+		return $cart_item_data;
+	}
+	$cart_item_data['lk_gift'] = array(
+		'email' => $email,
+		'name'  => isset( $_REQUEST['lk_gc_name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['lk_gc_name'] ) ) : '',
+		'from'  => isset( $_REQUEST['lk_gc_from'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['lk_gc_from'] ) ) : '',
+		'msg'   => isset( $_REQUEST['lk_gc_msg'] ) ? sanitize_textarea_field( wp_unslash( $_REQUEST['lk_gc_msg'] ) ) : '',
+	);
+	// Unique key so two gift cards for different people don't merge into one cart line.
+	$cart_item_data['lk_gift_key'] = md5( wp_json_encode( $cart_item_data['lk_gift'] ) );
+	return $cart_item_data;
+}, 10, 2 );
+
+// 2. Show who it's for in the cart / checkout.
+add_filter( 'woocommerce_get_item_data', function ( $item_data, $cart_item ) {
+	if ( ! empty( $cart_item['lk_gift']['email'] ) ) {
+		$g           = $cart_item['lk_gift'];
+		$item_data[] = array(
+			'key'   => 'Gift for',
+			'value' => ( $g['name'] ? $g['name'] . ' — ' : '' ) . $g['email'],
+		);
+	}
+	return $item_data;
+}, 10, 2 );
+
+// 3. Persist onto the order line item (hidden meta, plus a visible "Gift for" line).
+add_action( 'woocommerce_checkout_create_order_line_item', function ( $item, $cart_item_key, $values ) {
+	if ( empty( $values['lk_gift']['email'] ) ) {
+		return;
+	}
+	$g = $values['lk_gift'];
+	$item->add_meta_data( '_lk_gift_recipient_email', $g['email'], true );
+	$item->add_meta_data( '_lk_gift_recipient_name', $g['name'], true );
+	$item->add_meta_data( '_lk_gift_from', $g['from'], true );
+	$item->add_meta_data( '_lk_gift_message', $g['msg'], true );
+	$item->add_meta_data( 'Gift for', ( $g['name'] ? $g['name'] . ' — ' : '' ) . $g['email'], true );
+}, 10, 3 );
+
+/**
+ * Emails the generated code(s) to the gift recipient, using WooCommerce's own
+ * email template so it matches the store's branding. Returns true if sent.
+ */
+if ( ! function_exists( 'lk_send_gift_card_recipient_email' ) ) {
+	function lk_send_gift_card_recipient_email( $order, $item, array $codes, $amount ) {
+		$to = $item->get_meta( '_lk_gift_recipient_email' );
+		if ( ! is_email( $to ) || ! function_exists( 'WC' ) ) {
+			return false;
+		}
+		$name    = $item->get_meta( '_lk_gift_recipient_name' );
+		$from    = $item->get_meta( '_lk_gift_from' );
+		$message = $item->get_meta( '_lk_gift_message' );
+		if ( ! $from ) {
+			$from = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
+		}
+
+		$heading = $from ? sprintf( '%s sent you a gift card', $from ) : 'You have received a gift card';
+		$subject = sprintf( 'Your Lila Kora gift card (AED %s)', $amount );
+
+		$html  = '<p>' . ( $name ? 'Dear ' . esc_html( $name ) . ',' : 'Hello,' ) . '</p>';
+		$html .= '<p>' . ( $from ? esc_html( $from ) . ' has' : 'Someone special has' ) . ' sent you a Lila Kora gift card worth <strong>AED ' . esc_html( $amount ) . '</strong>.</p>';
+		if ( $message ) {
+			$html .= '<blockquote style="margin:16px 0;padding:12px 18px;background:#F8ECE9;border-left:3px solid #692137;font-style:italic;">' . nl2br( esc_html( $message ) ) . '</blockquote>';
+		}
+		$html .= '<p>Your code' . ( count( $codes ) > 1 ? 's' : '' ) . ':</p>';
+		foreach ( $codes as $code ) {
+			$html .= '<p style="font-size:22px;letter-spacing:2px;font-weight:bold;color:#692137;margin:6px 0;">' . esc_html( $code ) . '</p>';
+		}
+		$html .= '<p>Enter it at checkout on ' . esc_html( get_bloginfo( 'name' ) ) . ' to use it towards a scarf, a Canvas-to-Scarf Experience Box or a workshop. Valid for one year.</p>';
+		$html .= '<p><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html( wp_parse_url( home_url(), PHP_URL_HOST ) ) . '</a></p>';
+
+		$mailer  = WC()->mailer();
+		$body    = $mailer->wrap_message( $heading, $html );
+		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+		return (bool) $mailer->send( $to, $subject, $body, $headers );
+	}
+}
+
+/**
  * Builds the HTML/plain-text block shown on the thank-you page and in the
  * customer email: newly purchased codes, plus any remainder from a
  * partially-used gift card on this same order. Returns '' if neither applies
@@ -144,6 +257,9 @@ if ( ! function_exists( 'lk_gift_card_message_for_order' ) ) {
 			if ( $codes ) {
 				$amount = $item->get_meta( '_lk_gift_card_amount' );
 				$lines[] = sprintf( 'Your AED %s Lila Kora gift card code: %s — enter it at checkout on a future order to redeem it.', esc_html( $amount ), esc_html( $codes ) );
+				if ( $item->get_meta( '_lk_gift_card_emailed' ) ) {
+					$lines[] = sprintf( 'We have also emailed this code to %s.', esc_html( $item->get_meta( '_lk_gift_recipient_email' ) ) );
+				}
 			}
 		}
 

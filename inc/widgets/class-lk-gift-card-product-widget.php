@@ -173,7 +173,6 @@ class LK_Gift_Card_Product_Widget extends Widget_Base {
 					array( 'label' => 'AED 390', 'is_custom' => '' ),
 					array( 'label' => 'AED 690', 'is_custom' => '' ),
 					array( 'label' => 'AED 890', 'is_custom' => '' ),
-					array( 'label' => 'Custom value', 'is_custom' => 'yes' ),
 				),
 				'title_field' => '{{{ label }}}',
 			)
@@ -183,7 +182,11 @@ class LK_Gift_Card_Product_Widget extends Widget_Base {
 		$this->add_control( 'button_text_enquiry', array( 'label' => 'Button text when falling back to WhatsApp', 'type' => Controls_Manager::TEXT, 'default' => 'Arrange the Gift Card', 'label_block' => true ) );
 		$this->add_control( 'whatsapp_number', array( 'label' => 'WhatsApp number (with country code, no + or spaces)', 'type' => Controls_Manager::TEXT, 'default' => '971589610166' ) );
 		$this->add_control( 'message_template', array( 'label' => 'WhatsApp message template', 'type' => Controls_Manager::TEXTAREA, 'rows' => 3, 'default' => 'Hello Lila Kora, I would like to arrange a Lila Kora gift card with this value: {value}.', 'description' => 'Use {value} — replaced with the selected button text.' ) );
-		$this->add_control( 'fine_print', array( 'label' => 'Small print under the button', 'type' => Controls_Manager::TEXTAREA, 'rows' => 2, 'default' => 'Gift cards are prepared personally — you will receive yours by WhatsApp or email within 1 business day of your order.', 'label_block' => true, 'description' => 'Sets expectations since fulfilment is manual, not an automatic emailed code.' ) );
+		$this->add_control( 'fine_print', array( 'label' => 'Small print under the button', 'type' => Controls_Manager::TEXTAREA, 'rows' => 2, 'default' => 'The gift card code is emailed automatically to the recipient as soon as payment is confirmed.', 'label_block' => true ) );
+
+		$this->add_control( 'show_recipient', array( 'label' => 'Ask for recipient details', 'type' => Controls_Manager::SWITCHER, 'label_on' => 'Yes', 'label_off' => 'No', 'default' => 'yes', 'separator' => 'before', 'description' => 'Adds name / email / message fields. The code is emailed to that address after payment (needs lk-commerce-hooks.php).' ) );
+		$this->add_control( 'recipient_title', array( 'label' => 'Recipient section title', 'type' => Controls_Manager::TEXT, 'default' => 'Who is it for?', 'label_block' => true, 'condition' => array( 'show_recipient' => 'yes' ) ) );
+		$this->add_control( 'recipient_note', array( 'label' => 'Recipient section note', 'type' => Controls_Manager::TEXTAREA, 'rows' => 2, 'default' => 'We will email the gift card code straight to them. Leave the email empty to receive the code yourself.', 'label_block' => true, 'condition' => array( 'show_recipient' => 'yes' ) ) );
 
 		$this->end_controls_section();
 
@@ -432,6 +435,18 @@ class LK_Gift_Card_Product_Widget extends Widget_Base {
 					</fieldset>
 				<?php endif; ?>
 
+				<?php if ( 'yes' === $s['show_recipient'] ) : ?>
+					<fieldset class="lk-giftprod-recipient" data-lk-recipient>
+						<legend class="lk-giftprod-legend"><?php echo esc_html( $s['recipient_title'] ); ?></legend>
+						<?php if ( ! empty( $s['recipient_note'] ) ) : ?><p class="lk-giftprod-recipient-note"><?php echo esc_html( $s['recipient_note'] ); ?></p><?php endif; ?>
+						<input type="text" data-lk-gc="name" placeholder="Recipient's name" autocomplete="off" maxlength="80">
+						<input type="email" data-lk-gc="email" placeholder="Recipient's email" autocomplete="off" maxlength="120">
+						<input type="text" data-lk-gc="from" placeholder="Your name (shown in the email)" autocomplete="name" maxlength="80">
+						<textarea data-lk-gc="msg" rows="3" placeholder="Personal message (optional)" maxlength="400"></textarea>
+						<p class="lk-giftprod-recipient-error" data-lk-gc-error role="alert" hidden>Please enter a valid email address for the recipient.</p>
+					</fieldset>
+				<?php endif; ?>
+
 				<a class="lk-giftprod-order" data-lk-order href="#" target="_blank" rel="noopener"><?php echo esc_html( $s['button_text'] ); ?></a>
 				<p class="lk-giftprod-summary" data-lk-summary></p>
 				<?php if ( ! empty( $s['fine_print'] ) ) : ?><p class="lk-giftprod-fine"><?php echo esc_html( $s['fine_print'] ); ?></p><?php endif; ?>
@@ -477,6 +492,11 @@ class LK_Gift_Card_Product_Widget extends Widget_Base {
 			.lk-giftprod-legend { display: block; width: 100%; margin: 0 0 13px; }
 			.lk-giftprod-values { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 			.lk-giftprod-value { box-sizing: border-box; padding: 13px 16px; text-align: left; background: transparent; border: 1px solid; cursor: pointer; -webkit-appearance: none; appearance: none; box-shadow: none; transition: color .2s ease, background .2s ease, border-color .2s ease; }
+			.lk-giftprod-recipient { margin: 28px 0 0; padding: 18px 0 0; border: 0; border-top: 1px solid rgba(105,33,55,0.16); display: grid; gap: 9px; }
+			.lk-giftprod-recipient-note { margin: 0 0 4px; font-family: 'Montserrat', Arial, sans-serif; font-size: 13px; line-height: 1.6; color: #8F8584; }
+			.lk-giftprod-recipient input, .lk-giftprod-recipient textarea { width: 100%; box-sizing: border-box; padding: 13px 16px; font-family: 'Montserrat', Arial, sans-serif; font-size: 13px; color: #281D21; background: transparent; border: 1px solid rgba(105,33,55,0.16); border-radius: 0; box-shadow: none; }
+			.lk-giftprod-recipient input:focus, .lk-giftprod-recipient textarea:focus { outline: 0; border-color: #692137; }
+			.lk-giftprod-recipient-error { margin: 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 12px; color: #B3261E; }
 			.lk-giftprod-order { display: flex; width: 100%; box-sizing: border-box; align-items: center; justify-content: center; min-height: 58px; margin-top: 30px; text-decoration: none; border: 0; border-radius: 0; cursor: pointer; transition: color .25s ease, background .25s ease; }
 			.lk-giftprod-summary { margin: 13px 0 0; text-align: center; }
 			.lk-giftprod-fine { margin: 8px 0 0; text-align: center; }
@@ -539,6 +559,33 @@ class LK_Gift_Card_Product_Widget extends Widget_Base {
 						orderEl.setAttribute( 'rel', 'noopener' );
 						orderEl.textContent = root.getAttribute( 'data-label-enquiry' );
 					}
+				} );
+
+				document.addEventListener( 'click', function ( event ) {
+					var order = event.target.closest( '[data-lk-order]' );
+					if ( ! order || order.getAttribute( 'target' ) === '_blank' ) { return; } // WhatsApp mode: leave alone
+					var root = order.closest( '[data-lk-giftcard]' );
+					var box = root && root.querySelector( '[data-lk-recipient]' );
+					if ( ! box ) { return; }
+					event.preventDefault();
+					var get = function ( k ) { var el = box.querySelector( '[data-lk-gc="' + k + '"]' ); return el ? el.value.trim() : ''; };
+					var email = get( 'email' );
+					var err = box.querySelector( '[data-lk-gc-error]' );
+					if ( email && ! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test( email ) ) {
+						if ( err ) { err.hidden = false; }
+						box.querySelector( '[data-lk-gc="email"]' ).focus();
+						return;
+					}
+					if ( err ) { err.hidden = true; }
+					var url = order.getAttribute( 'href' );
+					if ( ! url || url === '#' ) { return; }
+					if ( email ) {
+						url += '&lk_gc_email=' + encodeURIComponent( email ) +
+							'&lk_gc_name=' + encodeURIComponent( get( 'name' ) ) +
+							'&lk_gc_from=' + encodeURIComponent( get( 'from' ) ) +
+							'&lk_gc_msg=' + encodeURIComponent( get( 'msg' ) );
+					}
+					window.location.href = url;
 				} );
 
 				document.querySelectorAll( '[data-lk-giftcard]:not([data-lk-bound])' ).forEach( function ( root ) {
