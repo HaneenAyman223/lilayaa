@@ -304,7 +304,7 @@ add_action( 'woocommerce_email_before_order_table', function ( $order, $sent_to_
 	} else {
 		echo '<p style="padding:14px 18px;background:#F8ECE9;border-left:3px solid #692137;">' . $message . '</p>';
 	}
-}, 5 );
+}, 5, 4 );
 
 /**
  * ---------------------------------------------------------------------------
