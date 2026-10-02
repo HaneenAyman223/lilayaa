@@ -151,6 +151,10 @@ require_once __DIR__ . '/widgets/class-lk-shop-guidance-widget.php';
 require_once __DIR__ . '/widgets/class-lk-gift-card-product-widget.php';
 require_once __DIR__ . '/widgets/class-lk-numbered-link-grid-widget.php';
 require_once __DIR__ . '/widgets/class-lk-organizations-widget.php';
+require_once __DIR__ . '/widgets/class-lk-occasion-grid-widget.php';
+require_once __DIR__ . '/widgets/class-lk-split-feature-widget.php';
+require_once __DIR__ . '/widgets/class-lk-journey-cards-widget.php';
+require_once __DIR__ . '/widgets/class-lk-enquiry-prompts-widget.php';
 $widgets_manager->register( new \LK_Organizations_Widget() );
 $widgets_manager->register( new \LK_Gift_Card_Product_Widget() );
 $widgets_manager->register( new \LK_Numbered_Link_Grid_Widget() );
@@ -196,6 +200,10 @@ $widgets_manager->register( new \LK_Stat_Counters_Widget() );
 $widgets_manager->register( new \LK_Testimonials_Widget() );
 $widgets_manager->register( new \LK_Product_Grid_Widget() );
 $widgets_manager->register( new \LK_Instagram_Feed_Widget() );
+$widgets_manager->register( new \LK_Occasion_Grid_Widget() );
+$widgets_manager->register( new \LK_Split_Feature_Widget() );
+$widgets_manager->register( new \LK_Journey_Cards_Widget() );
+$widgets_manager->register( new \LK_Enquiry_Prompts_Widget() );
 	}
 }
 
