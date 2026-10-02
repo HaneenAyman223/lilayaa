@@ -1,0 +1,507 @@
+/* =====================================================
+   Lila Kora — shared Elementor widget styles
+   Handles structure/layout only. Colours, sizing and hover
+   states are controlled from the Elementor Style tab per
+   widget — this file just makes sure the boxes sit where
+   they should, plus a font-fallback safety net below so
+   headings still read as serif even if, for any reason,
+   the Google Fonts request doesn't load.
+   ===================================================== */
+
+.lk-heading,
+.lk-grid-heading h2,
+.lk-card h3,
+.lk-card-number,
+.lk-brand-mark,
+.lk-brand-name,
+.lk-mobile-menu a:not(.lk-header-btn),
+.lk-sigbox-heading,
+.lk-sigbox-image figcaption {
+	font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+}
+.lk-eyebrow,
+.lk-intro,
+.lk-btn,
+.lk-underlink,
+.lk-card .lk-eyebrow,
+.lk-card p.lk-card-desc,
+.lk-card-link,
+.lk-grid-heading p.lk-desc,
+.lk-announcement,
+.lk-nav a,
+.lk-shop-link,
+.lk-header-btn,
+.lk-proof-item,
+.lk-commerce-item,
+.lk-nav-dropdown summary,
+.lk-nav-dropdown-menu a,
+.lk-mobile-menu-label,
+.lk-sigbox-desc,
+.lk-sigbox-price,
+.lk-sigbox-btn {
+	font-family: 'Montserrat', Arial, sans-serif;
+}
+
+/* ---------- Hero ---------- */
+.lk-hero {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	align-items: stretch;
+}
+
+.lk-hero-img-right .lk-hero-copy { order: 1; }
+.lk-hero-img-right .lk-hero-image { order: 2; }
+.lk-hero-img-left .lk-hero-copy { order: 2; }
+.lk-hero-img-left .lk-hero-image { order: 1; }
+
+.lk-hero-copy { margin: 0; align-self: center; }
+
+.lk-heading { margin: 0; font-style: normal; }
+.lk-heading em { font-style: italic; }
+
+.lk-intro { margin: 0; }
+
+.lk-button-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.lk-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	border: 1px solid transparent;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.lk-underlink {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	text-decoration: none;
+	border-bottom: 1px solid currentColor;
+	padding-bottom: 2px;
+	width: fit-content;
+	transition: color 0.25s ease, border-color 0.25s ease;
+}
+.lk-underlink span { transition: transform 0.25s ease; }
+.lk-underlink:hover span { transform: translate(2px, -2px); }
+
+.lk-hero-image {
+	position: relative;
+	margin: 0;
+	min-height: 680px;
+	overflow: hidden;
+}
+.lk-hero-image img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.lk-caption {
+	position: absolute;
+	left: 30px;
+	right: 30px;
+	bottom: 26px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin: 0;
+	padding: 0;
+	text-shadow: 0 1px 10px rgba(0, 0, 0, 0.28);
+}
+@media (max-width: 540px) {
+	.lk-caption { left: 18px; right: 18px; bottom: 16px; }
+	.lk-hero-copy .lk-btn { width: 100%; }
+}
+
+@media (max-width: 820px) {
+	.lk-hero {
+		grid-template-columns: 1fr !important;
+	}
+	.lk-hero-img-right .lk-hero-copy,
+	.lk-hero-img-left .lk-hero-copy { order: 2; }
+	.lk-hero-img-right .lk-hero-image,
+	.lk-hero-img-left .lk-hero-image { order: 1; }
+}
+
+/* ---------- Experience Grid ---------- */
+.lk-grid-heading { margin: 0 auto; }
+.lk-grid-heading h2 { margin: 0.3em 0; font-style: normal; }
+.lk-grid-heading h2 em { font-style: italic; }
+.lk-grid-heading p.lk-desc { margin: 0; }
+
+.lk-grid {
+	display: grid;
+}
+
+.lk-card {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	position: relative;
+}
+
+.lk-card-number {
+	display: inline-block;
+	color: var(--lk-card-accent, #E8674C);
+}
+
+.lk-card .lk-eyebrow { margin: 10px 0 6px; }
+.lk-card h3 { margin: 0 0 10px; }
+.lk-card p.lk-card-desc { margin: 0 0 18px; }
+
+.lk-card-link {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	text-decoration: none;
+	margin-top: auto;
+	padding-top: 14px;
+	border-top: 1px solid currentColor;
+	transition: color 0.25s ease;
+}
+.lk-card-link span { transition: transform 0.25s ease; }
+.lk-card:hover .lk-card-link span { transform: translate(2px, -2px); }
+
+/* ---------- Proof Strip ---------- */
+.lk-proof-strip {
+	display: grid;
+}
+.lk-proof-item {
+	box-sizing: border-box;
+	text-align: center;
+	border-style: solid;
+	border-width: 0 1px 0 0;
+}
+.lk-proof-item:last-child {
+	border-right-width: 0;
+}
+/* Reference collapses to 2 columns on tablet: the 2nd item loses its
+   right border (it's now the end of the row) and the first row gains
+   a bottom border instead, so the strip still reads as a clean box.
+   Elementor's own tablet/mobile breakpoints (not the static
+   reference's exact 820/540px) drive this — adjust in Site Settings →
+   Layout → Breakpoints if you need an exact px match. */
+@media (max-width: 820px) {
+	.lk-proof-item:nth-child(2n) { border-right-width: 0; }
+	.lk-proof-item:nth-child(-n+2) { border-bottom-width: 1px; }
+}
+
+/* ---------- Commerce Strip ---------- */
+.lk-commerce-strip {
+	display: grid;
+}
+.lk-commerce-item {
+	position: relative;
+	box-sizing: border-box;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	border-style: solid;
+	border-width: 0 1px 0 0;
+	transition: color 0.25s ease, background 0.25s ease;
+}
+.lk-commerce-item:last-child {
+	border-right-width: 0;
+}
+.lk-commerce-strip-arrow .lk-commerce-item::after {
+	content: "↗";
+	margin-left: 9px;
+}
+@media (max-width: 820px) {
+	.lk-commerce-item:nth-child(2n) { border-right-width: 0; }
+	.lk-commerce-item:nth-child(-n+2) { border-bottom-width: 1px; }
+}
+
+/* ---------- Signature Box ---------- */
+.lk-sigbox {
+	display: grid;
+	grid-template-columns: 0.88fr 1.12fr;
+	align-items: center;
+}
+.lk-sigbox-img-right .lk-sigbox-copy { order: 1; }
+.lk-sigbox-img-right .lk-sigbox-image { order: 2; }
+.lk-sigbox-img-left .lk-sigbox-copy { order: 2; }
+.lk-sigbox-img-left .lk-sigbox-image { order: 1; }
+
+.lk-sigbox-copy { margin: 0; }
+.lk-sigbox-heading { margin: 0 0 28px; font-style: normal; }
+.lk-sigbox-heading em { font-style: italic; }
+.lk-sigbox-desc { margin: 0; }
+
+.lk-sigbox-price {
+	box-sizing: border-box;
+	border-style: solid;
+	border-width: 1px 0;
+}
+.lk-sigbox-price > div {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 24px;
+}
+.lk-sigbox-price strong { white-space: nowrap; }
+.lk-sigbox-price small { display: block; margin-top: 7px; }
+
+.lk-sigbox-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	border: 1px solid transparent;
+	border-radius: 0;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+.lk-sigbox-btn:hover { transform: translateY(-2px); }
+
+.lk-sigbox-image { position: relative; margin: 0; }
+.lk-sigbox-image img { width: 100%; display: block; object-fit: cover; }
+.lk-sigbox-image figcaption {
+	padding-top: 13px;
+	text-align: right;
+	font-style: italic;
+}
+
+@media (max-width: 820px) {
+	.lk-sigbox {
+		grid-template-columns: 1fr;
+		gap: 58px !important;
+	}
+	.lk-sigbox-img-right .lk-sigbox-copy,
+	.lk-sigbox-img-left .lk-sigbox-copy { order: 2; }
+	.lk-sigbox-img-right .lk-sigbox-image,
+	.lk-sigbox-img-left .lk-sigbox-image { order: 1; }
+	.lk-sigbox-price > div { align-items: flex-start; flex-direction: column; gap: 5px; }
+}
+
+/* ---------- Transformation Strip ---------- */
+.lk-transformation-strip {
+	overflow: hidden;
+}
+.lk-transformation-strip-scroll {
+	overflow-x: auto;
+	scrollbar-width: thin;
+}
+.lk-transformation-strip-scroll::-webkit-scrollbar {
+	height: 8px;
+}
+.lk-transformation-strip img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+/* ---------- Announcement Bar ---------- */
+.lk-announcement {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.lk-announcement a {
+	border-bottom: 1px solid currentColor;
+	text-decoration: none;
+}
+@media (max-width: 540px) {
+	.lk-announcement-hide-msg-mobile span { display: none; }
+	.lk-announcement-hide-msg-mobile { justify-content: center; }
+}
+
+/* ---------- Site Header ---------- */
+.lk-header {
+	position: relative;
+	z-index: 50;
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	align-items: center;
+	border-bottom: 1px solid transparent;
+}
+.lk-header-sticky {
+	position: sticky;
+	top: 0;
+	-webkit-backdrop-filter: blur(14px);
+	backdrop-filter: blur(14px);
+}
+
+.lk-brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	text-decoration: none;
+}
+.lk-brand img { display: block; }
+.lk-brand-mark {
+	display: grid;
+	place-items: center;
+	border: 1px solid currentColor;
+	flex-shrink: 0;
+}
+
+.lk-nav {
+	align-items: center;
+	justify-content: center;
+}
+.lk-nav a,
+.lk-shop-link {
+	position: relative;
+	text-decoration: none;
+}
+.lk-nav a::after,
+.lk-shop-link::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 100%;
+	bottom: -8px;
+	height: 1px;
+	transition: right 0.35s ease;
+}
+.lk-nav a:hover::after,
+.lk-shop-link:hover::after {
+	right: 0;
+}
+
+.lk-nav-dropdown {
+	position: relative;
+}
+.lk-nav-dropdown summary {
+	position: relative;
+	padding-right: 16px;
+	cursor: pointer;
+	list-style: none;
+	text-decoration: none;
+}
+.lk-nav-dropdown summary::-webkit-details-marker {
+	display: none;
+}
+.lk-nav-dropdown summary::after {
+	content: "+";
+	position: absolute;
+	right: 0;
+	top: -1px;
+}
+.lk-nav-dropdown[open] summary::after {
+	content: "\2212"; /* minus sign */
+}
+.lk-nav-dropdown-menu {
+	position: absolute;
+	top: 34px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 60;
+	display: grid;
+	padding: 13px;
+	border: 1px solid transparent;
+}
+.lk-nav-dropdown-menu a {
+	padding: 11px 13px;
+	text-decoration: none;
+}
+.lk-nav-dropdown-menu a + a {
+	border-top: 1px solid transparent;
+}
+
+.lk-mobile-menu-label {
+	padding: 13px 0 2px;
+	font-size: 0.65rem;
+	font-weight: 600;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+}
+
+.lk-header-actions {
+	display: flex;
+	align-items: center;
+}
+
+.lk-header-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	border: 1px solid transparent;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background 0.3s ease, color 0.3s ease;
+}
+
+.lk-menu-toggle {
+	width: 42px !important;
+	height: 42px !important;
+	min-width: 0 !important;
+	min-height: 0 !important;
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 6px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	background-image: none !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	cursor: pointer !important;
+	-webkit-appearance: none !important;
+	appearance: none !important;
+	line-height: normal !important;
+	transform: none !important;
+	transition: none !important;
+}
+.lk-menu-toggle:hover,
+.lk-menu-toggle:focus,
+.lk-menu-toggle:active,
+.lk-menu-toggle:focus-visible {
+	background: transparent !important;
+	background-color: transparent !important;
+	border: 0 !important;
+	box-shadow: none !important;
+	outline: none !important;
+	transform: none !important;
+	color: inherit !important;
+}
+.lk-menu-toggle span {
+	width: 23px !important;
+	height: 1px !important;
+	min-width: 0 !important;
+	display: block !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+}
+
+.lk-mobile-menu {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	z-index: 49;
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	padding: 24px 5vw 30px;
+}
+.lk-mobile-menu[hidden] { display: none; }
+.lk-mobile-menu a {
+	text-decoration: none;
+	padding: 11px 0;
+	border-bottom: 1px solid transparent;
+}
+.lk-mobile-menu a.lk-header-btn {
+	border-bottom: none;
+	margin-top: 8px;
+	text-align: center;
+	padding: 14px 24px;
+}

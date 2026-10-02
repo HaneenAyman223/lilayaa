@@ -1,0 +1,138 @@
+/**
+ * Lila Kora — WooCommerce brand override
+ *
+ * WooCommerce's own templates (cart, checkout, "added to cart" notices,
+ * quantity fields, etc.) ship with a default blue that has nothing to do
+ * with any Elementor widget — none of the LK widgets touch these pages, so
+ * this file is the one place that re-colors WooCommerce's native buttons
+ * and links to match the site everywhere they appear, not just on /cart/.
+ *
+ * Brand colours used, matching every widget built for this site:
+ *   burgundy       #692137  (base — buttons, links, focus outline)
+ *   burgundy-soft  #7A2C42  (hover, so the button visibly reacts)
+ *   coral          #FF715E  (kept for anything already coral by request)
+ */
+
+:root {
+	--lk-wc-burgundy: #692137;
+	--lk-wc-burgundy-soft: #7A2C42;
+}
+
+/* ---------------------------------------------------------------------
+ * Buttons — classic (shortcode) cart, checkout, coupon, quantity, account
+ * -------------------------------------------------------------------*/
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit,
+.woocommerce-cart .button,
+.woocommerce-checkout .button,
+.woocommerce a.button.alt,
+.woocommerce button.button.alt,
+.woocommerce input.button.alt,
+.woocommerce #payment #place_order {
+	background-color: var(--lk-wc-burgundy) !important;
+	border-color: var(--lk-wc-burgundy) !important;
+	color: #FFFFFF !important;
+}
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover,
+.woocommerce #respond input#submit:hover,
+.woocommerce a.button.alt:hover,
+.woocommerce button.button.alt:hover,
+.woocommerce input.button.alt:hover,
+.woocommerce #payment #place_order:hover {
+	background-color: var(--lk-wc-burgundy-soft) !important;
+	border-color: var(--lk-wc-burgundy-soft) !important;
+	color: #FFFFFF !important;
+}
+/* "Update cart" is disabled until a quantity actually changes — WooCommerce
+   adds this class for that state, so it needs its own (lighter) treatment
+   rather than looking identical to an active button. */
+.woocommerce a.button.disabled,
+.woocommerce button.button.disabled,
+.woocommerce input.button.disabled,
+.woocommerce a.button:disabled,
+.woocommerce button.button:disabled,
+.woocommerce input.button:disabled {
+	background-color: rgba(105, 33, 55, 0.35) !important;
+	border-color: rgba(105, 33, 55, 0.35) !important;
+	color: #FFFFFF !important;
+	cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------------
+ * Buttons — block-based cart/checkout (if the Cart/Checkout blocks are
+ * used instead of the classic shortcode; harmless if they're not).
+ * -------------------------------------------------------------------*/
+.wp-block-woocommerce-checkout .wc-block-components-checkout-place-order-button,
+.wp-block-woocommerce-cart .wc-block-cart__submit-button,
+.wc-block-components-button:not(.is-style-outline) {
+	background-color: var(--lk-wc-burgundy) !important;
+	border-color: var(--lk-wc-burgundy) !important;
+	color: #FFFFFF !important;
+}
+.wp-block-woocommerce-checkout .wc-block-components-checkout-place-order-button:hover,
+.wp-block-woocommerce-cart .wc-block-cart__submit-button:hover,
+.wc-block-components-button:not(.is-style-outline):hover {
+	background-color: var(--lk-wc-burgundy-soft) !important;
+	border-color: var(--lk-wc-burgundy-soft) !important;
+}
+
+/* ---------------------------------------------------------------------
+ * Links — "✔ X has been added to your cart. View cart" notice, breadcrumbs,
+ * "Remove this item" (×), and any other plain WooCommerce link.
+ * -------------------------------------------------------------------*/
+.woocommerce-message a:not(.button),
+.woocommerce-info a:not(.button),
+.woocommerce-error a:not(.button),
+.woocommerce a:not(.button),
+.woocommerce-breadcrumb a,
+.woocommerce-cart .remove {
+	color: var(--lk-wc-burgundy) !important;
+}
+.woocommerce-message a:not(.button):hover,
+.woocommerce-info a:not(.button):hover,
+.woocommerce-error a:not(.button):hover,
+.woocommerce a:not(.button):hover,
+.woocommerce-breadcrumb a:hover,
+.woocommerce-cart .remove:hover {
+	color: var(--lk-wc-burgundy-soft) !important;
+}
+/* The "View cart" link inside the notice IS a .button (class="button wc-forward"),
+   so it's deliberately excluded above and instead just inherits the white text
+   already set by the general .woocommerce a.button rule further up this file. */
+/* WooCommerce colours the "added to cart" notice's left border and icon
+   with the same default blue, independent of the link colour above. */
+.woocommerce-message {
+	border-top-color: var(--lk-wc-burgundy) !important;
+}
+.woocommerce-message::before {
+	color: var(--lk-wc-burgundy) !important;
+}
+
+/* ---------------------------------------------------------------------
+ * Form focus states — quantity inputs, coupon field, checkout fields.
+ * Browsers default these to blue on focus regardless of theme; WooCommerce
+ * doesn't set a brand colour for this either.
+ * -------------------------------------------------------------------*/
+.woocommerce input.qty:focus,
+.woocommerce table.cart input.qty:focus,
+.woocommerce-cart table.cart td.actions .coupon input#coupon_code:focus,
+.woocommerce-checkout input:focus,
+.woocommerce-checkout select:focus,
+.woocommerce-checkout textarea:focus {
+	border-color: var(--lk-wc-burgundy) !important;
+	outline-color: var(--lk-wc-burgundy) !important;
+	box-shadow: 0 0 0 1px var(--lk-wc-burgundy) !important;
+}
+
+/* ---------------------------------------------------------------------
+ * Price colour — some WooCommerce/theme combinations tint the cart's price
+ * and subtotal column with the theme's link colour (often blue by default).
+ * -------------------------------------------------------------------*/
+.woocommerce .amount,
+.woocommerce-Price-amount {
+	color: var(--lk-wc-burgundy);
+}
