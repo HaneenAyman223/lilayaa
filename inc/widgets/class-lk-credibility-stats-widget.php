@@ -129,9 +129,9 @@ class LK_Credibility_Stats_Widget extends Widget_Base {
 				'type'        => Controls_Manager::REPEATER,
 				'fields'      => $item->get_controls(),
 				'default'     => array(
-					array( 'value' => '100', 'prefix' => '', 'suffix' => '+', 'label' => 'Add your first label' ),
-					array( 'value' => '100', 'prefix' => '', 'suffix' => '+', 'label' => 'Add your second label' ),
-					array( 'value' => '100', 'prefix' => '', 'suffix' => '%', 'label' => 'Add your third label' ),
+					array( 'value' => '15', 'prefix' => '', 'suffix' => '+', 'label' => 'Creative experiences hosted' ),
+					array( 'value' => '70', 'prefix' => '', 'suffix' => '+', 'label' => 'Original canvases created' ),
+					array( 'value' => '180', 'prefix' => '', 'suffix' => '+', 'label' => 'Silk pieces crafted' ),
 				),
 				'title_field' => '{{{ prefix }}}{{{ value }}}{{{ suffix }}} — {{{ label }}}',
 			)
